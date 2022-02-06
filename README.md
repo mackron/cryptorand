@@ -1,4 +1,4 @@
-<h4 align="center">Cryptographically Secure Pseudo-Random Number Generator.</h4>
+<h4 align="center">Cryptographically Secure Pseudo-Random Number Generator</h4>
 
 <p align="center">
     <a href="https://discord.gg/9vpqbjU"><img src="https://img.shields.io/discord/712952679415939085?label=discord&logo=discord" alt="discord"></a>
@@ -18,11 +18,9 @@ header/source pair.
 
 There's only three functions, all of which should be self explanatory and easy to figure out:
 
-    ```
     cryptorand_result cryptorand_init(cryptorand* pRNG);
     void cryptorand_uninit(cryptorand* pRNG);
     cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t bufferSizeInBytes);
-    ```
 
 Call `cryptorand_init()` to initialize the random number generator. On Windows, this is where
 libraries are linked at runtime so avoid calling this in high performance scenarios. It's best to
