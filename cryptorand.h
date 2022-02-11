@@ -21,7 +21,7 @@ There's only three functions, all of which should be self explanatory and easy t
     ```
     cryptorand_result cryptorand_init(cryptorand* pRNG);
     void cryptorand_uninit(cryptorand* pRNG);
-    cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t bufferSizeInBytes);
+    cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount);
     ```
 
 Call `cryptorand_init()` to initialize the random number generator. On Windows, this is where
@@ -91,7 +91,7 @@ typedef struct
 
 cryptorand_result cryptorand_init(cryptorand* pRNG);
 void cryptorand_uninit(cryptorand* pRNG);
-cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t bufferSizeInBytes);
+cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount);
 
 #endif  /* cryptorand_h */
 
