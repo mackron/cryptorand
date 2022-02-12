@@ -40,13 +40,24 @@ Thread safety depends on the backend.
 #ifndef cryptorand_h
 #define cryptorand_h
 
+/* Win32. */
 #if defined(_WIN32)
     #define CRYPTORAND_WIN32
 #endif
 
-/* At the moment only supporting urandom() with Linux, but if other platforms support they can be added to the list. */
-#if defined(__linux__)
+/* /dev/urandom. Add platforms to this list as required. */
+#if defined(__linux__) || defined(__APPLE__) || defined(__DragonFly__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__ANDROID__)
     #define CRYPTORAND_URANDOM
+#endif
+
+/*
+OpenBSD recommends using arc4random() over /dev/urandom:
+
+    The urandom device is intended to be used in scripts. In C programs, use the arc4random(3)
+    family of functions instead ...
+*/
+#if defined(__OpenBSD__)
+    #define CRYPTORAND_ARC4RANDOM
 #endif
 
 #include <stddef.h> /* For size_t. */
@@ -86,6 +97,12 @@ typedef struct
     {
         /*FILE**/ void* pFile;  /* The file handle returned by open(). */
     } urandom;
+#endif
+#if defined(CRYPTORAND_ARC4RANDOM)
+    struct
+    {
+        int __unused;
+    } arc4;
 #endif
 } cryptorand;
 
@@ -261,6 +278,30 @@ static cryptorand_result cryptorand_generate__urandom(cryptorand* pRNG, void* pB
 }
 #endif
 
+#if defined(CRYPTORAND_ARC4RANDOM)
+#include <stdlib.h>
+
+static cryptorand_result cryptorand_init__arc4random(cryptorand* pRNG)
+{
+    (void)pRNG;
+    return CRYPTORAND_SUCCESS;
+}
+
+static void cryptorand_uninit__arc4random(cryptorand* pRNG)
+{
+    (void)pRNG;
+}
+
+static cryptorand_result cryptorand_generate__arc4random(cryptorand* pRNG, void* pBufferOut, size_t byteCount)
+{
+    /* The arc4random() family is always successful. */
+    arc4random_buf(pBufferOut, byteCount);
+
+    (void)pRNG;
+    return CRYPTORAND_SUCCESS;
+}
+#endif
+
 
 cryptorand_result cryptorand_init(cryptorand* pRNG)
 {
@@ -276,6 +317,8 @@ cryptorand_result cryptorand_init(cryptorand* pRNG)
     result = cryptorand_init__win32(pRNG);
 #elif defined(CRYPTORAND_URANDOM)
     result = cryptorand_init__urandom(pRNG);
+#elif defined(CRYPTORAND_ARC4RANDOM)
+    result = cryptorand_init__arc4random(pRNG);
 #else
     result = CRYPTORAND_NOT_IMPLEMENTED;
 #endif
@@ -297,6 +340,8 @@ void cryptorand_uninit(cryptorand* pRNG)
     cryptorand_uninit__win32(pRNG);
 #elif defined(CRYPTORAND_URANDOM)
     cryptorand_uninit__urandom(pRNG);
+#elif defined(CRYPTORAND_ARC4RANDOM)
+    cryptorand_uninit__arc4random(pRNG);
 #else
     /* Not implemented. */
 #endif
@@ -316,6 +361,8 @@ cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t
     result = cryptorand_generate__win32(pRNG, pBufferOut, byteCount);
 #elif defined(CRYPTORAND_URANDOM)
     result = cryptorand_generate__urandom(pRNG, pBufferOut, byteCount);
+#elif defined(CRYPTORAND_ARC4RANDOM)
+    result = cryptorand_generate__arc4random(pRNG, pBufferOut, byteCount);
 #else
     result = CRYPTORAND_NOT_IMPLEMENTED;
 #endif
