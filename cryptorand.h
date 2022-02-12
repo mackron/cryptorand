@@ -40,6 +40,10 @@ Thread safety depends on the backend.
 #ifndef cryptorand_h
 #define cryptorand_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Win32. */
 #if defined(_WIN32)
     #define CRYPTORAND_WIN32
@@ -110,6 +114,9 @@ cryptorand_result cryptorand_init(cryptorand* pRNG);
 void cryptorand_uninit(cryptorand* pRNG);
 cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount);
 
+#ifdef __cplusplus
+}
+#endif
 #endif  /* cryptorand_h */
 
 #if defined(CRYPTORAND_IMPLEMENTATION)
