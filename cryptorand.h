@@ -66,6 +66,10 @@ OpenBSD recommends using arc4random() over /dev/urandom:
 
 #include <stddef.h> /* For size_t. */
 
+#if !defined(CRYPTORAND_API)
+    #define CRYPTORAND_API
+#endif
+
 typedef enum
 {
     CRYPTORAND_SUCCESS           =  0,
@@ -110,9 +114,9 @@ typedef struct
 #endif
 } cryptorand;
 
-cryptorand_result cryptorand_init(cryptorand* pRNG);
-void cryptorand_uninit(cryptorand* pRNG);
-cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount);
+CRYPTORAND_API cryptorand_result cryptorand_init(cryptorand* pRNG);
+CRYPTORAND_API void cryptorand_uninit(cryptorand* pRNG);
+CRYPTORAND_API cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount);
 
 #ifdef __cplusplus
 }
@@ -310,7 +314,7 @@ static cryptorand_result cryptorand_generate__arc4random(cryptorand* pRNG, void*
 #endif
 
 
-cryptorand_result cryptorand_init(cryptorand* pRNG)
+CRYPTORAND_API cryptorand_result cryptorand_init(cryptorand* pRNG)
 {
     cryptorand_result result;
 
@@ -337,7 +341,7 @@ cryptorand_result cryptorand_init(cryptorand* pRNG)
     return result;
 }
 
-void cryptorand_uninit(cryptorand* pRNG)
+CRYPTORAND_API void cryptorand_uninit(cryptorand* pRNG)
 {
     if (pRNG == NULL) {
         return;
@@ -356,7 +360,7 @@ void cryptorand_uninit(cryptorand* pRNG)
     CRYPTORAND_ZERO_OBJECT(pRNG);
 }
 
-cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount)
+CRYPTORAND_API cryptorand_result cryptorand_generate(cryptorand* pRNG, void* pBufferOut, size_t byteCount)
 {
     cryptorand_result result;
 
