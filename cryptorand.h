@@ -153,7 +153,7 @@ static cryptorand_result cryptorand_init__win32(cryptorand* pRNG)
     */
     CRYPTORAND_ZERO_OBJECT(&pRNG->win32);   /* For safety. */
     {
-        HANDLE hBcryptDLL;
+        HMODULE hBcryptDLL;
 
         hBcryptDLL = LoadLibraryW(L"bcrypt.dll");
         if (hBcryptDLL != NULL) {
@@ -180,7 +180,7 @@ static cryptorand_result cryptorand_init__win32(cryptorand* pRNG)
     /* Getting here means we're falling back to the old method. */
     CRYPTORAND_ZERO_OBJECT(&pRNG->win32);   /* For safety. */
     {
-        HANDLE hAdvapiDLL;
+        HMODULE hAdvapiDLL;
 
         hAdvapiDLL = LoadLibraryW(L"advapi32.dll");
         if (hAdvapiDLL != NULL) {
@@ -218,10 +218,10 @@ static void cryptorand_uninit__win32(cryptorand* pRNG)
     }
 
     if (pRNG->win32.hBcryptDLL != NULL) {
-        FreeLibrary((HANDLE)pRNG->win32.hBcryptDLL);
+        FreeLibrary((HMODULE)pRNG->win32.hBcryptDLL);
     }
     if (pRNG->win32.hAdvapiDLL != NULL) {
-        FreeLibrary((HANDLE)pRNG->win32.hAdvapiDLL);
+        FreeLibrary((HMODULE)pRNG->win32.hAdvapiDLL);
     }
 }
 
@@ -232,12 +232,12 @@ static cryptorand_result cryptorand_generate__win32(cryptorand* pRNG, void* pBuf
     }
 
     if (pRNG->win32.hAlgorithm != NULL) {
-        LONG result = ((CRYPTORAND_PFN_BCryptGenRandom)pRNG->win32.BCryptGenRandom)(pRNG->win32.hAlgorithm, pBufferOut, (ULONG)byteCount, 0);
+        LONG result = ((CRYPTORAND_PFN_BCryptGenRandom)pRNG->win32.BCryptGenRandom)(pRNG->win32.hAlgorithm, (unsigned char*)pBufferOut, (ULONG)byteCount, 0);
         if (result != 0) {
             return CRYPTORAND_ERROR;
         }
     } else if (pRNG->win32.hProvider != NULL) {
-        if (!((CRYPTORAND_PFN_CryptGenRandom)pRNG->win32.CryptGenRandom)(pRNG->win32.hProvider, (DWORD)byteCount, pBufferOut)) {
+        if (!((CRYPTORAND_PFN_CryptGenRandom)pRNG->win32.CryptGenRandom)(pRNG->win32.hProvider, (DWORD)byteCount, (unsigned char*)pBufferOut)) {
             return CRYPTORAND_ERROR;
         }
     }
