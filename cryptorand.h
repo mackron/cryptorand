@@ -9,8 +9,7 @@ This uses the operating system's random number generation. If you're looking for
 scratch you'll need to look elsewhere.
 
 Supported generation methods are Win32's BCryptGenRandom() with CryptGenRandom() as a fallback. On
-Linux, /dev/urandom is used. Currently only Windows and Linux are supported. If you are aware of
-other platforms that support /dev/urandom, let me know and I'll add support.
+platforms that support /dev/urandom, that will be used. OpenBSD will use arc4random().
 
 There is no need to link to anything with this library. You can use CRYPTORAND_IMPLEMENTATION to
 define the implementation section, or you can use cryptorand.c if you prefer a traditional
